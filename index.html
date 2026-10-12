@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b0d10">
+  <meta name="description" content="Fast offline mandi billing and cash tracking.">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <title>MandiFlow</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b0d10;--panel:#15191f;--panel2:#1d222a;--line:#303640;--text:#f5f7fa;--muted:#929aa7;--accent:#c6f36b;--green:#9de36b;--red:#ff7777;--amber:#ffd27a}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,input{font:inherit}
+    button{cursor:pointer;touch-action:manipulation}
+    .app{max-width:680px;margin:0 auto;padding:16px 14px 34px}
+    header{display:flex;align-items:center;gap:12px;padding:8px 2px 18px}
+    .logo{width:46px;height:46px;border-radius:15px;background:var(--accent);color:#11150b;display:grid;place-items:center;font-size:23px;font-weight:900}
+    .brand{font-weight:800;font-size:22px;letter-spacing:-.7px}.subbrand{font-size:10px;letter-spacing:1.4px;color:var(--muted);margin-top:3px}
+    .offline{margin-left:auto;border:1px solid var(--line);border-radius:999px;padding:7px 10px;color:var(--accent);font-size:11px;white-space:nowrap}
+    .hero{background:linear-gradient(145deg,#19202a,#13171d 70%);border:1px solid #29313b;border-radius:24px;padding:20px;margin-bottom:14px}
+    .eyebrow{font-size:11px;letter-spacing:1.2px;color:var(--muted);font-weight:700}
+    .big-total{font-size:clamp(32px,8vw,44px);font-weight:850;letter-spacing:-1.5px;margin:8px 0 15px;overflow-wrap:anywhere}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+    .stat{background:#0e1116;border:1px solid #262c35;border-radius:14px;padding:11px 10px;min-width:0}
+    .stat span{display:block;color:var(--muted);font-size:10px;letter-spacing:.6px;margin-bottom:7px}
+    .stat strong{font-size:17px;white-space:nowrap}
+    nav{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#14171c;padding:5px;border-radius:15px;margin:14px 0}
+    nav button{border:0;background:transparent;color:var(--muted);padding:12px 5px;border-radius:11px;font-weight:700;font-size:13px}
+    nav button.active{background:#2a3039;color:var(--accent)}
+    .panel{background:var(--panel);border:1px solid #242a32;border-radius:20px;padding:16px;margin-bottom:13px}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+    h2{font-size:18px;margin:0;letter-spacing:-.35px}
+    .hint{color:var(--muted);font-size:12px;line-height:1.45}
+    label{display:block;color:#c1c7d0;font-size:13px;font-weight:650;margin-bottom:8px}
+    input{width:100%;min-width:0;background:#0d1014;border:1px solid #343b46;color:var(--text);border-radius:13px;padding:14px 13px;outline:none;font-size:18px}
+    input:focus{border-color:var(--accent);box-shadow:0 0 0 2px #c6f36b22}
+    .price-input{font-size:24px;font-weight:750}
+    .weights{display:flex;flex-direction:column;gap:9px}
+    .weight-row{display:grid;grid-template-columns:39px 1fr 42px;align-items:center;gap:8px}
+    .number{width:39px;height:45px;border-radius:12px;background:#252b34;color:#c5ccd6;display:grid;place-items:center;font-weight:750;font-size:13px}
+    .remove{height:43px;width:42px;border-radius:12px;border:1px solid #343b46;background:#20252d;color:#9ca5b2;font-size:21px}
+    .add{width:100%;padding:15px;border:1px dashed #536442;background:#192015;color:var(--accent);border-radius:14px;font-weight:800;margin-top:10px}
+    .breakdown{display:flex;flex-direction:column;gap:13px}
+    .line{display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:14px}
+    .line span{color:#b0b7c2}.line strong{font-size:15px;text-align:right}
+    .grand{border-top:1px solid var(--line);padding-top:15px;margin-top:3px}
+    .grand span{font-weight:800;color:var(--text)}.grand strong{font-size:23px;color:var(--accent)}
+    .btn{border:0;border-radius:14px;padding:15px 14px;font-weight:800;min-height:49px}
+    .btn-primary{background:var(--accent);color:#12160d}.btn-secondary{background:#252b34;color:var(--text);border:1px solid #363e49}
+    .btn-danger{background:#321c20;color:#ffaaaa;border:1px solid #573037}
+    .btn-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+    .full{width:100%;margin-top:10px}
+    .field{margin-bottom:14px}
+    .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#252b34;padding:7px 10px;color:#d6dbe2;font-size:11px;font-weight:750}
+    .pill.green{background:#1e2b18;color:var(--accent)}.pill.red{background:#321c20;color:#ffaaaa}.pill.amber{background:#332918;color:var(--amber)}
+    .notice{padding:12px 13px;background:#1c2026;border-radius:12px;color:#b7bfca;font-size:12px;line-height:1.5;margin-top:10px}
+    .list{display:flex;flex-direction:column;gap:9px}
+    .record{background:#0f1217;border:1px solid #2a3039;border-radius:14px;padding:13px}
+    .record-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .record-title{font-weight:800}.record-meta{color:var(--muted);font-size:12px;margin-top:5px;line-height:1.5}
+    .record-amount{font-weight:850;color:var(--accent);text-align:right}
+    .small-btn{border:1px solid #343b46;background:#222831;color:#e7ebf0;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:700}
+    .empty{text-align:center;color:var(--muted);padding:24px 10px;font-size:13px}
+    .hidden{display:none!important}
+    .totals-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .summary-card{padding:13px;background:#0e1116;border:1px solid #2a3039;border-radius:14px}
+    .summary-card span{display:block;font-size:11px;color:var(--muted);margin-bottom:8px}.summary-card strong{font-size:19px;overflow-wrap:anywhere}
+    .foot{text-align:center;color:#656d79;font-size:11px;padding:12px 0}
+    @media(max-width:390px){.app{padding:11px 10px 25px}.hero{padding:16px}.panel{padding:13px}.stat{padding:9px 7px}.stat strong{font-size:15px}.stat span{font-size:9px}nav button{font-size:12px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">M</div>
+    <div><div class="brand">mandiflow</div><div class="subbrand">QUICK BILLING · CASH CONTROL</div></div>
+    <div class="offline" id="connection">● READY</div>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">CURRENT BILL · LIVE TOTAL</div>
+    <div class="big-total" id="heroTotal">₹0.00</div>
+    <div class="stats">
+      <div class="stat"><span>TOTAL WEIGHT</span><strong id="heroWeight">0 kg</strong></div>
+      <div class="stat"><span>UNITS</span><strong id="heroUnits">0</strong></div>
+      <div class="stat"><span>PRICE / KG</span><strong id="heroRate">₹0</strong></div>
+    </div>
+  </section>
+
+  <nav>
+    <button class="active" data-tab="bill">＋ New Bill</button>
+    <button data-tab="cash">₹ Cash Desk</button>
+    <button data-tab="records">▤ Records</button>
+  </nav>
+
+  <main id="billTab">
+    <section class="panel">
+      <div class="section-head"><h2>01 · Set price</h2><span class="pill">ENTER ONCE</span></div>
+      <div class="field">
+        <label for="rate">Price per kg (₹)</label>
+        <input id="rate" class="price-input" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 30">
+      </div>
+      <div class="section-head"><h2>02 · Add weights</h2><span class="hint">Each entry = 1 unit</span></div>
+      <div class="weights" id="weights"></div>
+      <button class="add" id="addWeight">＋ &nbsp; ADD ANOTHER WEIGHT</button>
+      <div class="notice">Enter the price once. Add each weight as it is sold. The total and charges update automatically.</div>
+    </section>
+    <section class="panel">
+      <div class="section-head"><h2>03 · Bill breakdown</h2><span class="pill green">AUTO</span></div>
+      <div class="breakdown">
+        <div class="line"><span>Vegetable amount</span><strong id="baseAmount">₹0.00</strong></div>
+        <div class="line"><span>Atat · 7%</span><strong id="atatAmount">₹0.00</strong></div>
+        <div class="line"><span>Unit charges · ₹10 × <b id="unitCount">0</b></span><strong id="unitFees">₹0.00</strong></div>
+        <div class="line grand"><span>FINAL TOTAL</span><strong id="finalTotal">₹0.00</strong></div>
+      </div>
+      <div class="field" style="margin-top:18px">
+        <label for="received">Cash actually received (₹)</label>
+        <input id="received" type="number" inputmode="decimal" min="0" step="any" placeholder="Enter amount received">
+        <div class="hint" style="margin-top:7px">Leave blank if no payment has been received. Don't mark promised money as collected.</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="saveUnpaid">Save unpaid</button>
+        <button class="btn btn-primary" id="saveBill">Save bill & next →</button>
+      </div>
+    </section>
+  </main>
+
+  <main id="cashTab" class="hidden">
+    <section class="panel">
+      <div class="section-head"><h2>Cash desk</h2><span class="pill green">TODAY</span></div>
+      <div class="totals-grid">
+        <div class="summary-card"><span>Cash collected</span><strong id="cashCollected">₹0.00</strong></div>
+        <div class="summary-card"><span>Handed to owners</span><strong id="cashHanded">₹0.00</strong></div>
+        <div class="summary-card"><span>Expected cash on hand</span><strong id="cashExpected">₹0.00</strong></div>
+        <div class="summary-card"><span>Unpaid balance</span><strong id="cashOutstanding">₹0.00</strong></div>
+      </div>
+      <div class="notice">Expected cash on hand = recorded cash collected − recorded owner handovers. This assumes the starting cash balance is ₹0; record any opening balance separately in your real process.</div>
+    </section>
+    <section class="panel">
+      <div class="section-head"><h2>Record owner handover</h2><span class="pill">CASH OUT</span></div>
+      <div class="field"><label for="handoverAmount">Amount handed over (₹)</label><input id="handoverAmount" type="number" inputmode="decimal" min="0" step="any" placeholder="e.g. 50000"></div>
+      <div class="field"><label for="handoverNote">Note / recipient reference (optional)</label><input id="handoverNote" type="text" maxlength="100" placeholder="e.g. first handover"></div>
+      <button class="btn btn-primary full" id="saveHandover">＋ Record handover</button>
+    </section>
+    <section class="panel">
+      <div class="section-head"><h2>Cash count at closing</h2><span class="pill amber">DAY END</span></div>
+      <div class="field"><label for="actualCash">Actual cash counted (₹)</label><input id="actualCash" type="number" inputmode="decimal" min="0" step="any" placeholder="Count the cash physically"></div>
+      <div class="summary-card"><span>Difference (actual − expected)</span><strong id="cashDifference">—</strong></div>
+      <button class="btn btn-secondary full" id="saveCashCount">Save closing count</button>
+      <div class="hint" id="cashCountSaved" style="margin-top:8px"></div>
+    </section>
+    <section class="panel">
+      <div class="section-head"><h2>Today's handovers</h2></div>
+      <div id="handoverList" class="list"><div class="empty">No handovers recorded today.</div></div>
+    </section>
+  </main>
+
+  <main id="recordsTab" class="hidden">
+    <section class="panel">
+      <div class="section-head"><h2>Today's summary</h2><span class="pill green" id="todayLabel"></span></div>
+      <div class="totals-grid">
+        <div class="summary-card"><span>Total billed</span><strong id="sumBilled">₹0.00</strong></div>
+        <div class="summary-card"><span>Cash received</span><strong id="sumReceived">₹0.00</strong></div>
+        <div class="summary-card"><span>Outstanding</span><strong id="sumDue">₹0.00</strong></div>
+        <div class="summary-card"><span>Saved bills</span><strong id="sumCount">0</strong></div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="section-head"><h2>Saved bills</h2><span class="hint">Newest first</span></div>
+      <div id="billList" class="list"><div class="empty">No bills saved today.</div></div>
+    </section>
+    <section class="panel">
+      <div class="section-head"><h2>Backup & export</h2></div>
+      <p class="hint">Records stay on this device. Export a backup regularly, and keep a copy somewhere safe. Do not clear browser data before exporting.</p>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="exportJson">Export backup</button>
+        <button class="btn btn-secondary" id="exportCsv">Export CSV</button>
+      </div>
+      <label class="btn btn-secondary full" style="display:block;text-align:center">Import backup <input id="importFile" type="file" accept=".json,application/json" style="display:none"></label>
+      <button class="btn btn-danger full" id="resetDay">Reset today's data</button>
+      <div class="hint">Reset is destructive. Export first. This only resets the current date's records on this device.</div>
+    </section>
+  </main>
+  <div class="foot">MANDIFLOW · LOCAL-FIRST · MADE FOR FAST ENTRY</div>
+</div>
+<div id="toast" role="status" aria-live="polite" style="position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#c6f36b;color:#11150b;padding:12px 17px;border-radius:13px;font-weight:800;font-size:13px;box-shadow:0 8px 30px #0008;display:none;z-index:10;max-width:90vw;text-align:center"></div>
+<script src="./app.js" defer></script>
+</body>
+</html>
